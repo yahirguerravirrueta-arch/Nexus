@@ -3,498 +3,1335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>Nexus - Instagram Clone</title>
+    <title>Nexus Gram</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS GENERALES TIPO INSTAGRAM --- */
         :root {
-            --bg: #000000;
-            --card: #000000;
-            --text: #ffffff;
-            --muted: #a8a8a8;
-            --border: #262626;
-            --blue: #0095f6;
-            --danger: #ed4956;
-            --story-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            --bg: #000; --text: #fff; --gray: #262626; --blue: #0095f6; --red: #ed4956;
+            --gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; justify-content: center; }
         
-        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; justify-content: center; overflow: hidden; }
-
-        /* Contenedor tipo Móvil */
-        .app-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; position: relative; background: var(--bg); border-left: 1px solid #1c1c1c; border-right: 1px solid #1c1c1c; }
-        
+        .app { width: 100%; max-width: 480px; height: 100%; position: relative; display: flex; flex-direction: column; background: #000; }
         .hidden { display: none !important; }
-
-        /* --- PANTALLA LOGIN --- */
-        .auth-container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
-        .logo-text { font-family: 'Inter', sans-serif; font-size: 32px; font-weight: 700; margin-bottom: 30px; letter-spacing: -1px; }
-        .auth-input { width: 100%; padding: 14px; margin: 6px 0; background: #121212; border: 1px solid #333; color: white; border-radius: 4px; outline: none; font-size: 14px; }
-        .auth-btn { width: 100%; padding: 14px; background: var(--blue); border: none; color: white; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 15px; font-size: 14px; }
-
-        /* --- HEADER SUPERIOR (HOME) --- */
-        .top-nav {
-            padding: 0 16px; height: 54px; display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg); z-index: 10;
-        }
-        .app-logo { font-size: 22px; font-weight: 700; font-family: sans-serif; letter-spacing: -0.5px; }
-        .nav-icons { display: flex; gap: 20px; font-size: 24px; }
-        .icon-btn { cursor: pointer; position: relative; }
-        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; }
-
-        /* --- HISTORIAS (STORIES) --- */
-        .stories-rail {
-            display: flex; gap: 14px; padding: 10px 16px; overflow-x: auto; border-bottom: 1px solid var(--border);
-            scrollbar-width: none; /* Firefox */
-        }
-        .stories-rail::-webkit-scrollbar { display: none; }
+        input:focus, textarea:focus { outline: none; }
         
-        .story-item { display: flex; flex-direction: column; align-items: center; min-width: 68px; cursor: pointer; }
-        .story-ring {
-            width: 64px; height: 64px; border-radius: 50%; padding: 2px;
-            background: var(--story-gradient);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .story-ring.seen { background: #333; }
-        .story-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--bg); object-fit: cover; background: #222; }
-        .story-name { font-size: 11px; margin-top: 4px; color: white; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 64px; }
+        /* UTILIDADES */
+        .avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #333; }
+        .avatar.large { width: 80px; height: 80px; border: 2px solid #333; }
+        .btn { background: var(--blue); border: none; color: white; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; }
+        .btn.secondary { background: #333; border: 1px solid #444; margin-top: 10px; }
         
-        .my-story .story-ring { background: transparent; position: relative; }
-        .add-story-icon { position: absolute; bottom: 0; right: 0; background: var(--blue); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 16px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg); }
+        /* LOGIN */
+        .auth-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
+        .auth-input { background: #121212; border: 1px solid #333; color: white; padding: 12px; border-radius: 4px; margin-bottom: 10px; width: 100%; }
 
-        /* --- FEED POSTS --- */
-        .feed-container { flex: 1; overflow-y: auto; padding-bottom: 60px; }
-        .post { margin-bottom: 20px; }
-        .post-header { padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
-        .user-info { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
-        .avatar-small { width: 32px; height: 32px; border-radius: 50%; background: #333; object-fit: cover; }
-        .post-img-container { width: 100%; background: #1a1a1a; min-height: 300px; display: flex; align-items: center; }
-        .post-img { width: 100%; height: auto; display: block; }
-        .post-actions { padding: 12px; display: flex; justify-content: space-between; font-size: 24px; }
-        .action-left { display: flex; gap: 16px; }
-        .post-likes { padding: 0 12px; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-        .post-caption { padding: 0 12px; font-size: 14px; line-height: 1.4; }
-        .post-time { padding: 6px 12px; font-size: 11px; color: var(--muted); }
-        .delete-btn { font-size: 20px; color: white; background: none; border: none; }
-
-        /* --- PANTALLA MENSAJES (INBOX) --- */
-        .inbox-screen { background: black; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; flex-direction: column; }
-        .inbox-header { padding: 15px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: 700; }
-        .search-bar-container { padding: 0 16px 15px; }
-        .search-input { width: 100%; background: #262626; border: none; border-radius: 10px; padding: 8px 15px; color: #fff; font-size: 14px; outline: none; }
+        /* HEADER */
+        .header { padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1c1c1c; z-index: 10; }
+        .logo { font-size: 24px; font-weight: 700; font-family: cursive; }
         
-        .notes-section { display: flex; gap: 15px; padding: 10px 16px; overflow-x: auto; margin-bottom: 10px; }
-        .note-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; position: relative; }
-        .note-bubble { 
-            position: absolute; top: -10px; background: #fff; color: black; font-size: 10px; padding: 4px 8px; border-radius: 10px; 
-            max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
-        }
-        .message-list { flex: 1; overflow-y: auto; padding-top: 10px; }
-        .msg-row { display: flex; align-items: center; padding: 10px 16px; cursor: pointer; gap: 12px; }
-        .msg-row:active { background: #111; }
-        .msg-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #333; }
-        .msg-content { flex: 1; }
-        .msg-name { font-weight: 500; font-size: 14px; color: #fff; margin-bottom: 2px; }
-        .msg-preview { color: var(--muted); font-size: 13px; }
-        .cam-icon { font-size: 20px; color: var(--muted); }
+        /* HISTORIAS */
+        .stories-rail { display: flex; gap: 15px; padding: 10px 15px; overflow-x: auto; border-bottom: 1px solid #1c1c1c; }
+        .story-ring { width: 66px; height: 66px; border-radius: 50%; padding: 2px; background: var(--gradient); position: relative; display: flex; align-items: center; justify-content: center;}
+        .story-ring.seen { background: #555; }
+        .story-ring img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #000; object-fit: cover; }
+        .add-btn { position: absolute; bottom: 0; right: 0; background: var(--blue); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; font-size: 16px; }
 
-        /* --- PANTALLA CHAT INDIVIDUAL --- */
-        .chat-room { position: fixed; inset: 0; background: black; z-index: 60; display: flex; flex-direction: column; }
-        .chat-header { padding: 10px 16px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); }
-        .chat-body { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .chat-input-area { padding: 10px 16px; display: flex; align-items: center; gap: 10px; background: black; }
-        .chat-input { flex: 1; background: #262626; border: none; border-radius: 20px; padding: 10px 15px; color: white; outline: none; }
+        /* FEED POSTS */
+        .feed { flex: 1; overflow-y: auto; padding-bottom: 60px; }
+        .post { border-bottom: 1px solid #1c1c1c; padding-bottom: 15px; margin-bottom: 10px; }
+        .post-header { padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; }
+        .post-img-container { width: 100%; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .post-img { width: 100%; height: auto; max-height: 600px; object-fit: contain; display: block; }
         
-        .bubble { max-width: 70%; padding: 10px 14px; border-radius: 20px; font-size: 14px; word-wrap: break-word; }
-        .bubble.me { align-self: flex-end; background: #3797f0; color: white; border-bottom-right-radius: 4px; }
-        .bubble.you { align-self: flex-start; background: #262626; color: white; border-bottom-left-radius: 4px; }
+        .actions { padding: 10px 15px; display: flex; gap: 15px; font-size: 24px; }
+        
+        /* MODALES GENERALES */
+        .modal-overlay { position: fixed; inset: 0; background: #000; z-index: 100; display: flex; flex-direction: column; }
+        .modal-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        
+        /* MODAL COMENTARIOS */
+        .comments-content { flex: 1; overflow-y: auto; padding: 15px; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 15px; }
+        .comment-body { flex: 1; font-size: 14px; }
+        .comment-body b { margin-right: 5px; }
+        .comment-reply { font-size: 12px; color: #aaa; margin-top: 5px; cursor: pointer; }
+        
+        .reply-bar { padding: 10px 15px; background: #000; border-top: 1px solid #333; display: flex; gap: 10px; align-items: center; }
+        .reply-bar input { flex: 1; background: #121212; border: none; color: white; padding: 10px; border-radius: 20px; }
+        .reply-bar button { background: transparent; color: var(--blue); border: none; font-weight: 600; padding: 0 10px; cursor: pointer; }
 
-        /* --- BOTTOM NAVIGATION --- */
-        .bottom-nav {
-            height: 50px; border-top: 1px solid var(--border); background: black; display: flex; justify-content: space-around; align-items: center;
-            position: absolute; bottom: 0; width: 100%; z-index: 20;
-        }
-        .nav-icon { font-size: 24px; color: white; cursor: pointer; }
-        .user-nav-avatar { width: 24px; height: 24px; border-radius: 50%; background: #444; border: 1px solid white; }
+        /* MODAL CÁMARA / EDITOR */
+        .cam-preview { flex: 1; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .cam-preview img, .cam-preview video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .upload-controls { padding: 20px; background: #000; border-top: 1px solid #333; }
+        .gallery-trigger { width: 100%; padding: 20px; background: #222; border-radius: 10px; text-align: center; color: #888; cursor: pointer; border: 2px dashed #444; }
 
-        /* --- MODAL CREAR POST --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; }
-        .modal-box { background: #262626; width: 90%; max-width: 400px; border-radius: 12px; padding: 20px; }
-        .modal-title { text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; font-weight: 600; }
-        textarea { width: 100%; background: #121212; border: none; color: white; padding: 10px; border-radius: 8px; resize: none; margin-bottom: 10px; }
+        /* PERFIL */
+        .profile-header { padding: 20px; display: flex; gap: 20px; align-items: center; }
+        .stats { display: flex; gap: 20px; text-align: center; font-size: 14px; }
+        .stat-num { font-weight: 700; display: block; font-size: 18px; }
+        
+        /* NAV INFERIOR */
+        .nav-bar { height: 50px; border-top: 1px solid #1c1c1c; background: #000; display: flex; justify-content: space-around; align-items: center; position: absolute; bottom: 0; width: 100%; z-index: 50; }
+        .nav-icon { font-size: 24px; cursor: pointer; }
 
+        /* VISOR HISTORIAS */
+        .story-viewer { position: fixed; inset: 0; background: #000; z-index: 200; display: flex; flex-direction: column; }
+        .progress-bar { height: 3px; background: rgba(255,255,255,0.3); margin: 10px; border-radius: 2px; }
+        .progress-fill { height: 100%; background: white; width: 0%; }
+        .story-content { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .story-content img, .story-content video { max-width: 100%; max-height: 80vh; }
+
+        /* ESTILOS DE CHAT */
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 20px; font-size: 14px; line-height: 1.4; }
+        .msg.self { background: var(--blue); color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+        .msg.other { background: #333; color: white; border-bottom-left-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+<div class="app">
+    
+    <div id="authScreen" class="auth-screen">
+        <h1 class="logo" style="font-size: 40px; margin-bottom: 30px;">Nexus Gram</h1>
+        <input type="text" id="usernameInput" class="auth-input" placeholder="Nombre de usuario">
+        <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
+        <input type="password" id="passInput" class="auth-input" placeholder="Contraseña">
+        <button class="btn" onclick="authAction('login')">Entrar</button>
+        <button class="btn secondary" onclick="authAction('register')">Registrarse</button>
+        <p id="authMsg" style="color: var(--red); margin-top: 15px; font-size: 12px;"></p>
+    </div>
+
+    <div id="mainApp" class="hidden" style="height: 100%; display: flex; flex-direction: column;">
         
-        <div id="authScreen" class="auth-container">
-            <div class="logo-text">Nexus</div>
-            <input type="email" id="emailInput" class="auth-input" placeholder="Teléfono, usuario o correo">
-            <input type="password" id="passInput" class="auth-input" placeholder="Contraseña">
-            <button class="auth-btn" onclick="handleLogin()">Iniciar sesión</button>
-            <button class="auth-btn" style="background:transparent; color:#0095f6; margin-top:5px" onclick="handleRegister()">Registrarte</button>
-            <p id="authError" style="color:var(--danger); font-size:12px; margin-top:10px"></p>
+        <div class="header">
+            <div class="logo">Nexus</div>
+            <div style="display:flex; gap: 15px; font-size: 24px;">
+                <span onclick="alert('Notificaciones')">⚡</span>
+                <span onclick="openDmsModal()">✉️</span> 
+            </div>
         </div>
 
-        <div id="appScreen" class="hidden" style="height:100%; display:flex; flex-direction:column;">
+        <div style="flex: 1; overflow-y: auto; position: relative;">
             
-            <div class="top-nav">
-                <div class="app-logo">Nexus</div>
-                <div class="nav-icons">
-                    <div class="icon-btn">♡</div>
-                    <div class="icon-btn" onclick="openInbox()">
-                        <svg aria-label="Messenger" class="_8-yf5 " fill="#ffffff" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M12.003 2.001a9.705 9.705 0 11-9.705 9.705 9.694 9.694 0 019.705-9.705zm0-2a11.704 11.704 0 1011.704 11.704A11.717 11.717 0 0012.003.001zM11.999 20a8.001 8.001 0 118.001-8.001 8.01 8.01 0 01-8.001 8.001z"></path><path d="M11.999 5a7.002 7.002 0 00-6.136 10.323l-1.353 3.655a1.001 1.001 0 001.275 1.275l3.655-1.353A7.002 7.002 0 1011.999 5zm0 12a4.998 4.998 0 114.998-4.998 5.003 5.003 0 01-4.998 4.998z"></path></svg>
-                        <div class="badge hidden" id="msgBadge"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="feed-container" id="feedContainer">
-                
-                <div class="stories-rail" id="storiesRail">
-                    <div class="story-item my-story">
-                        <div class="story-ring">
-                            <img src="https://via.placeholder.com/150" class="story-img" id="myStoryAvatar">
-                            <div class="add-story-icon">+</div>
+            <div id="feedScreen">
+                <div class="stories-rail" id="storiesContainer">
+                    <div class="story-item" onclick="openUploader('story')"> 
+                        <div class="story-ring seen">
+                            <img id="myStoryAvatar" src="">
+                            <div class="add-btn">+</div>
                         </div>
-                        <span class="story-name">Tu historia</span>
+                        <div style="font-size: 11px; text-align: center; margin-top: 4px;">Tu historia</div>
                     </div>
                     </div>
-
-                <div id="postsList"></div>
+                <div id="feedList"></div>
             </div>
 
-            <nav class="bottom-nav">
-                <div class="nav-icon">🏠</div> <div class="nav-icon">🔍</div> <div class="nav-icon" onclick="openCreateModal()">➕</div> <div class="nav-icon">🎬</div> <div class="user-nav-avatar" id="navProfilePic"></div> </nav>
+            <div id="profileScreen" class="hidden">
+                <div class="profile-header">
+                    <img id="profileAvatar" class="avatar large">
+                    <div style="flex:1">
+                        <h3 id="profileUsername"></h3>
+                        <div class="stats">
+                            <div><span class="stat-num" id="statPosts">0</span>Publi</div>
+                            <div><span class="stat-num">0</span>Seguidores</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="padding: 0 20px;">
+                    
+                    <h4 style="margin-top: 20px; margin-bottom: 5px;">Editar Perfil</h4>
+                    <input type="text" id="newUsernameInput" class="auth-input" placeholder="Nuevo nombre de usuario" style="margin-bottom: 5px;">
+                    <button class="btn" style="width: auto; padding: 10px 20px; margin-bottom: 15px;" onclick="updateUsername()">Guardar Nombre</button>
+
+                    <button class="btn secondary" style="border:1px solid #444" onclick="openUploader('profile')">Editar Foto de Perfil</button>
+                    <button class="btn secondary" style="border:1px solid #444; margin-top: 5px;" onclick="auth.signOut()">Cerrar Sesión</button>
+
+                    <div id="userProfilePosts" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 20px;">
+                        </div>
+                </div>
+            </div>
+
+            <div id="searchScreen" class="hidden" style="padding:15px">
+                <input class="auth-input" placeholder="Buscar usuarios..." onkeyup="searchUsers(this.value)">
+                <div id="searchResults"></div>
+            </div>
 
         </div>
 
-        <div id="inboxScreen" class="inbox-screen hidden">
-            <div class="inbox-header">
-                <div style="display:flex; align-items:center; gap:10px">
-                    <span style="font-size:24px; cursor:pointer" onclick="closeInbox()">←</span>
-                    <span id="inboxUsername">usuario_nexus</span>
-                </div>
-                <div>📝</div>
+        <div class="nav-bar">
+            <div class="nav-icon" onclick="switchTab('feed')">🏠</div>
+            <div class="nav-icon" onclick="switchTab('search')">🔍</div>
+            <div class="nav-icon" onclick="openUploader('post')">➕</div>
+            <div class="nav-icon" onclick="switchTab('profile')">
+                <img id="navAvatar" class="avatar">
             </div>
+        </div>
+    </div>
+</div>
+
+<div id="uploadModal" class="modal-overlay hidden">
+    <div class="modal-header">
+        <span onclick="closeUploader()">Cancelar</span>
+        <span style="font-weight:bold" id="uploadTitle">Nueva Publicación</span>
+        <span></span>
+    </div>
+
+    <div class="cam-preview" id="previewContainer">
+        <p style="color:#666">Selecciona una imagen</p>
+    </div>
+
+    <div class="upload-controls">
+        <input type="file" id="fileInput" class="hidden" accept="image/*,video/*">
+        
+        <div id="selectBtn" class="gallery-trigger" onclick="document.getElementById('fileInput').click()">
+            📂 Abrir Galería
+        </div>
+
+        <div id="actionButtons" class="hidden" style="margin-top: 15px;">
             
-            <div class="search-bar-container">
-                <input type="text" class="search-input" placeholder="Buscar">
-            </div>
-
-            <div class="notes-section" id="notesList">
-                <div class="note-item">
-                    <div class="note-bubble">Tu nota</div>
-                    <img src="https://via.placeholder.com/150" class="avatar-small" style="width:50px; height:50px; margin-top:5px" id="myNoteAvatar">
-                    <span style="font-size:11px; margin-top:2px; color:#aaa">Tu nota</span>
-                </div>
-            </div>
-
-            <div style="padding: 10px 16px; font-weight:700; font-size:14px">Mensajes</div>
-
-            <div class="message-list" id="conversationsList">
-                <p style="text-align:center; color:#555; margin-top:20px">Cargando usuarios...</p>
-            </div>
-        </div>
-
-        <div id="chatRoom" class="chat-room hidden">
-            <div class="chat-header">
-                <span style="font-size:24px; cursor:pointer" onclick="closeChat()">←</span>
-                <img src="" id="chatHeaderAvatar" class="avatar-small">
-                <div style="flex:1">
-                    <div id="chatHeaderName" style="font-weight:600">Nombre</div>
-                    <div style="font-size:11px; color:var(--muted)">Activo ahora</div>
-                </div>
-                <div style="font-size:22px">📞 📹</div>
-            </div>
+            <textarea id="captionInput" class="auth-input" rows="3" placeholder="Escribe un pie de foto..." style="display:none"></textarea>
             
-            <div class="chat-body" id="chatBody">
-                </div>
+            <button id="confirmBtn" class="btn" onclick="executeUpload()">Publicar</button>
+        </div>
+    </div>
+</div>
 
-            <div class="chat-input-area">
-                <div style="background:#333; color:white; border-radius:50%; width:35px; height:35px; display:flex; align-items:center; justify-content:center">📷</div>
-                <input type="text" class="chat-input" id="msgInput" placeholder="Envía un mensaje...">
-                <button onclick="sendDirectMessage()" style="background:none; border:none; color:var(--blue); font-weight:600; cursor:pointer">Enviar</button>
+<div id="commentsModal" class="modal-overlay hidden">
+    <div class="modal-header">
+        <span onclick="closeCommentsModal()">✕</span>
+        <span style="font-weight:bold">Comentarios</span>
+        <span></span>
+    </div>
+    
+    <div id="commentsList" class="comments-content">
+        </div>
+
+    <div class="reply-bar">
+        <img id="commentUserAvatar" class="avatar" style="width: 30px; height: 30px;">
+        <input type="text" id="commentInput" placeholder="Añade un comentario..." />
+        <button onclick="postComment()">Publicar</button>
+    </div>
+</div>
+
+<div id="postViewerModal" class="modal-overlay hidden">
+    <div class="modal-header">
+        <span onclick="closePostViewer()">✕</span>
+        <span id="pvUsernameHeader" style="font-weight:bold">Publicación</span>
+        <span></span>
+    </div>
+    
+    <div style="flex: 1; overflow-y: auto;">
+        
+        <div class="post-header" style="padding: 15px 15px 10px 15px;">
+            <div style="display:flex;align-items:center;gap:10px">
+                <img id="pvAvatar" src="" class="avatar">
+                <b id="pvUsername"></b>
             </div>
         </div>
 
-        <div id="createModal" class="modal-overlay hidden">
-            <div class="modal-box">
-                <div class="modal-title">Crear publicación</div>
-                <textarea id="postText" rows="3" placeholder="Escribe un pie de foto..."></textarea>
-                <input type="text" id="postImage" class="auth-input" placeholder="URL de la imagen (Ej: https://...)" style="margin-bottom:15px">
-                <div style="display:flex; gap:10px">
-                    <button class="auth-btn" style="flex:1; background:#333" onclick="closeCreateModal()">Cancelar</button>
-                    <button class="auth-btn" style="flex:1" onclick="createPost()">Compartir</button>
-                </div>
-            </div>
+        <div class="post-img-container">
+            <img id="pvImage" src="" class="post-img">
         </div>
+
+        <div class="actions">
+            <span id="pvLikeBtn" onclick="toggleLike(currentViewingPostId, true)" style="color:white">♡</span>
+            <span onclick="openCommentsModal(currentViewingPostId)">💬</span>
+        </div>
+        
+        <div style="padding:0 15px 15px 15px">
+            <b id="pvLikesCount">0 Me gusta</b><br>
+            <span id="pvCaption"></span>
+        </div>
+        
+        <div style="padding: 0 15px;" id="pvCommentsList">
+            </div>
 
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, setDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    <div class="reply-bar" style="border-top: 1px solid #333;">
+        <img id="pvCommentUserAvatar" class="avatar" style="width: 30px; height: 30px;">
+        <input type="text" id="pvCommentInput" placeholder="Añade un comentario..." />
+        <button onclick="postCommentFromViewer()">Publicar</button>
+    </div>
+</div>
 
-        // ============================================
-        // ⚠️ PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE ⚠️
-        // ============================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyCKYoLe-eRgMVPdnVq0GXhMd8oMCOEWGg0",
-            authDomain: "nexus-97f3e.firebaseapp.com",
-            projectId: "nexus-97f3e",
-            storageBucket: "nexus-97f3e.firebasestorage.app",
-            messagingSenderId: "912984263748",
-            appId: "1:912984263748:web:e841a7ace0398a8e99c011"
-        };
+<div id="storyViewer" class="story-viewer hidden">
+    <div class="progress-bar"><div class="progress-fill" id="storyProgress"></div></div>
+    
+    <div style="padding: 10px; display:flex; align-items:center; gap:10px; z-index:10">
+        <img id="svAvatar" class="avatar">
+        <span id="svUsername" style="font-weight:bold"></span>
+        <span style="flex:1"></span>
+        <span onclick="closeStory()" style="cursor:pointer; padding:10px">✕</span>
+    </div>
+    
+    <div class="story-content" id="svContent"></div>
+    
+    <div id="storyFooter" style="position: absolute; bottom: 0; width: 100%; z-index: 10;">
+        </div>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        let currentUser = null;
-        let allUsers = []; 
-        let currentChatUser = null; // Email del usuario con quien hablas
-
-        const ADMIN_EMAIL = "admin@nexus.com";
-
-        /* --- AUTH & INIT --- */
-        window.handleLogin = async () => {
-            try {
-                await signInWithEmailAndPassword(auth, el('emailInput').value, el('passInput').value);
-            } catch (e) { el('authError').innerText = "Error: " + e.message; }
-        };
-
-        window.handleRegister = async () => {
-            try {
-                const cred = await createUserWithEmailAndPassword(auth, el('emailInput').value, el('passInput').value);
-                // Guardar usuario en colección 'users' para poder listarlo en DM
-                await setDoc(doc(db, "users", cred.user.email), {
-                    email: cred.user.email,
-                    avatar: `https://i.pravatar.cc/150?u=${cred.user.email}` // Avatar random
-                });
-            } catch (e) { el('authError').innerText = e.message; }
-        };
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                el('authScreen').classList.add('hidden');
-                el('appScreen').classList.remove('hidden');
-                
-                // Asegurar que el usuario esté en la BD de 'users' (por si es login antiguo)
-                await setDoc(doc(db, "users", user.email), {
-                    email: user.email,
-                    avatar: `https://i.pravatar.cc/150?u=${user.email}`
-                }, { merge: true });
-
-                el('inboxUsername').innerText = user.email.split('@')[0];
-                el('myStoryAvatar').src = `https://i.pravatar.cc/150?u=${user.email}`;
-                el('navProfilePic').style.backgroundImage = `url(https://i.pravatar.cc/150?u=${user.email})`;
-                el('navProfilePic').style.backgroundSize = 'cover';
-
-                loadPosts();
-                loadStories();
-                loadUsersForInbox(); // Cargar lista para DM
-            } else {
-                el('appScreen').classList.add('hidden');
-                el('authScreen').classList.remove('hidden');
-            }
-        });
-
-        /* --- UI LOGIC --- */
-        const el = (id) => document.getElementById(id);
+<div id="dmsModal" class="modal-overlay hidden">
+    
+    <div id="dmsListScreen" style="height:100%; display:flex; flex-direction:column;">
+        <div class="modal-header">
+            <span onclick="closeDmsModal()">✕</span>
+            <span style="font-weight:bold">Mensajes Directos</span>
+            <span onclick="alert('Nuevo mensaje')">✍️</span>
+        </div>
         
-        window.openCreateModal = () => el('createModal').classList.remove('hidden');
-        window.closeCreateModal = () => el('createModal').classList.add('hidden');
+        <div style="padding: 15px 0; border-bottom: 1px solid #333; overflow-x: auto; white-space: nowrap;">
+            <div id="dmsUserBubbles" style="display:flex; gap:15px; padding: 0 15px;">
+                </div>
+        </div>
 
-        /* --- FEED POSTS --- */
-        window.createPost = async () => {
-            const text = el('postText').value;
-            const img = el('postImage').value;
-            if(!text && !img) return;
+        <div id="chatPreviews" style="flex: 1; overflow-y: auto; padding: 15px; text-align: center; color: #888;">
+            <p style="margin-top: 50px;">Aquí aparecerán los chats si tuviéramos una lista de conversaciones real.</p>
+            <p style="margin-top: 15px; font-size: 14px;">(Usa las burbujas de arriba para iniciar un chat individual)</p>
+        </div>
+    </div>
 
+    <div id="dmChatScreen" class="hidden" style="height:100%; display:flex; flex-direction:column;">
+        <div class="modal-header">
+            <span onclick="loadDmsUsers(true)">←</span> <span id="chatRecipientName" style="font-weight:bold"></span>
+            <span></span>
+        </div>
+        
+        <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 15px; display:flex; flex-direction:column; gap:10px;">
+            </div>
+
+        <div class="reply-bar" style="border-top: 1px solid #333;">
+            <input type="text" id="dmInput" placeholder="Enviar mensaje privado..." />
+            <button onclick="sendDmMessage()">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, arrayUnion, arrayRemove, setDoc, getDocs, getDoc, where, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+// --- PEGA TU CONFIG AQUÍ ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCKYoLe-eRgMVPdnVq0GXhMd8oMCOEWGg0",
+  authDomain: "nexus-97f3e.firebaseapp.com",
+  projectId: "nexus-97f3e",
+  storageBucket: "nexus-97f3e.firebasestorage.app",
+  messagingSenderId: "912984263748",
+  appId: "1:912984263748:web:e841a7ace0398a8e99c011"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
+
+// --- VARIABLES GLOBALES ---
+let currentUser = null;
+let currentMode = ''; 
+let fileToUpload = null;
+let currentPostId = null; 
+let replyToCommentId = null; 
+
+// --- NUEVAS VARIABLES DE CONTROL DE VISTA ---
+let currentViewingProfileUid = null; // ID del perfil que se está viendo actualmente
+let currentViewingPostId = null;     // ID del post que se está viendo en el modal
+
+// --- VARIABLES PARA CHAT ---
+let currentRecipientUid = null;
+let currentChatId = null; 
+let unsubscribeChatListener = null; 
+// ----------------------------
+
+// Exportar auth para el botón de cerrar sesión
+window.auth = auth;
+
+// --- AUTH ---
+window.authAction = async (type) => {
+    const email = document.getElementById('emailInput').value;
+    const pass = document.getElementById('passInput').value;
+    const userN = document.getElementById('usernameInput').value;
+    const msg = document.getElementById('authMsg');
+
+    try {
+        if (type === 'register') {
+            const cred = await createUserWithEmailAndPassword(auth, email, pass);
+            await updateProfile(cred.user, { 
+                displayName: userN || "Usuario", 
+                photoURL: "https://via.placeholder.com/150" 
+            });
+            await setDoc(doc(db, "users", cred.user.uid), {
+                username: userN || "Usuario",
+                email: email,
+                avatar: "https://via.placeholder.com/150",
+                postsCount: 0,
+                followers: [] // Inicializar seguidores
+            });
+
+        } else {
+            await signInWithEmailAndPassword(auth, email, pass);
+        }
+    } catch (e) {
+        msg.innerText = "Error: " + e.message;
+    }
+};
+
+// --- FUNCIÓN CRÍTICA DE INICIO ---
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        document.getElementById('authScreen').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        
+        const uRef = doc(db, "users", user.uid);
+        const uSnap = await getDoc(uRef);
+
+        if (!uSnap.exists()) {
+            console.warn("Perfil de usuario no encontrado en Firestore, creando documento...");
+            const defaultPic = "https://via.placeholder.com/150";
+
+            await updateProfile(user, { 
+                displayName: user.displayName || "Usuario Nuevo", 
+                photoURL: user.photoURL || defaultPic 
+            });
+
+            await setDoc(uRef, {
+                username: user.displayName || "Usuario Nuevo",
+                email: user.email,
+                avatar: user.photoURL || defaultPic,
+                postsCount: 0,
+                followers: []
+            });
+        }
+        
+        updateUI(user);
+        listenFeed();
+        listenStories();
+        
+        // Cargar mis posts iniciales
+        loadUserPosts(user.uid); 
+        
+        document.getElementById('commentUserAvatar').src = user.photoURL || "https://via.placeholder.com/150";
+    }
+});
+
+async function updateUI(user) {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    const data = snap.data();
+    const pic = data.avatar || user.photoURL; 
+
+    document.getElementById('navAvatar').src = pic;
+    document.getElementById('myStoryAvatar').src = pic;
+    
+    // Solo actualiza los datos del perfil si estamos viendo nuestro propio perfil.
+    if (!currentViewingProfileUid || currentViewingProfileUid === user.uid) {
+        document.getElementById('profileAvatar').src = pic;
+        document.getElementById('profileUsername').innerText = data.username;
+        document.getElementById('statPosts').innerText = data.postsCount || 0;
+        document.querySelector('.stats div:nth-child(2) .stat-num').innerText = data.followers?.length || 0;
+        document.getElementById('newUsernameInput').placeholder = `Nombre actual: ${data.username}`;
+    }
+    
+}
+
+// --- EDICIÓN DE PERFIL ---
+window.updateUsername = async () => {
+    const newUsername = document.getElementById('newUsernameInput').value.trim();
+    
+    if (newUsername.length < 3) {
+        alert("El nombre de usuario debe tener al menos 3 caracteres.");
+        return;
+    }
+    
+    if (!currentUser) {
+        alert("Error: Usuario no autenticado.");
+        return;
+    }
+
+    try {
+        await updateProfile(currentUser, { displayName: newUsername });
+        const userRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userRef, { username: newUsername });
+
+        updateUI(currentUser);
+        document.getElementById('newUsernameInput').value = ''; 
+        alert(`¡Nombre de usuario actualizado a "${newUsername}"!`);
+
+    } catch (e) {
+        console.error("Error al actualizar nombre de usuario:", e);
+        alert("Error al actualizar: " + e.message);
+    }
+};
+
+
+// --- SUBIDAS ---
+window.openUploader = (mode) => {
+    currentMode = mode;
+    fileToUpload = null;
+    document.getElementById('uploadModal').classList.remove('hidden');
+    
+    document.getElementById('previewContainer').innerHTML = '<p style="color:#666">Selecciona una imagen</p>';
+    document.getElementById('actionButtons').classList.add('hidden');
+    document.getElementById('selectBtn').classList.remove('hidden');
+    document.getElementById('captionInput').value = '';
+    
+    const title = document.getElementById('uploadTitle');
+    const btn = document.getElementById('confirmBtn');
+    const caption = document.getElementById('captionInput');
+    
+    if (mode === 'post') {
+        title.innerText = "Nueva Publicación";
+        btn.innerText = "Compartir";
+        caption.style.display = 'block';
+    } else if (mode === 'story') {
+        title.innerText = "Tu Historia";
+        btn.innerText = "Subir Historia";
+        caption.style.display = 'none';
+    } else if (mode === 'profile') {
+        title.innerText = "Foto de Perfil";
+        btn.innerText = "Guardar Foto de Perfil"; 
+        caption.style.display = 'none';
+    }
+};
+
+window.closeUploader = () => {
+    document.getElementById('uploadModal').classList.add('hidden');
+    document.getElementById('fileInput').value = ''; 
+};
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    fileToUpload = file;
+    const url = URL.createObjectURL(file);
+    const container = document.getElementById('previewContainer');
+    
+    if (file.type.startsWith('image/')) {
+        container.innerHTML = `<img src="${url}">`;
+    } else {
+        container.innerHTML = `<video src="${url}" controls autoplay loop></video>`;
+    }
+    
+    document.getElementById('selectBtn').classList.add('hidden');
+    document.getElementById('actionButtons').classList.remove('hidden');
+});
+
+window.executeUpload = async () => {
+    if (!fileToUpload) return alert("Selecciona un archivo primero");
+    
+    const btn = document.getElementById('confirmBtn');
+    btn.innerText = "Subiendo...";
+    btn.disabled = true;
+
+    try {
+        const refLink = `uploads/${currentUser.uid}/${Date.now()}_file`;
+        const storageRef = ref(storage, refLink);
+        await uploadBytes(storageRef, fileToUpload);
+        const downloadUrl = await getDownloadURL(storageRef);
+
+        const uSnap = await getDoc(doc(db, "users", currentUser.uid));
+        const uData = uSnap.data();
+
+        if (currentMode === 'profile') {
+            await updateDoc(doc(db, "users", currentUser.uid), { avatar: downloadUrl });
+            await updateProfile(currentUser, { photoURL: downloadUrl });
+            updateUI(currentUser);
+        } 
+        else if (currentMode === 'post') {
+            const caption = document.getElementById('captionInput').value;
             await addDoc(collection(db, "posts"), {
-                text, img,
-                userEmail: currentUser.email,
-                avatar: `https://i.pravatar.cc/150?u=${currentUser.email}`,
-                createdAt: Date.now(),
-                likes: 0
-            });
-            closeCreateModal();
-            el('postText').value = ''; el('postImage').value = '';
-        };
-
-        function loadPosts() {
-            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snap) => {
-                const list = el('postsList');
-                list.innerHTML = '';
-                snap.forEach(docSnap => {
-                    const p = docSnap.data();
-                    const isAdm = currentUser.email === ADMIN_EMAIL || currentUser.email === p.userEmail;
-                    
-                    let delBtn = isAdm ? `<button class="delete-btn" onclick="deletePost('${docSnap.id}')">⋮</button>` : '';
-
-                    list.innerHTML += `
-                        <article class="post">
-                            <div class="post-header">
-                                <div class="user-info">
-                                    <img src="${p.avatar || 'https://via.placeholder.com/30'}" class="avatar-small">
-                                    <span>${p.userEmail.split('@')[0]}</span>
-                                </div>
-                                ${delBtn}
-                            </div>
-                            <div class="post-img-container">
-                                ${p.img ? `<img src="${p.img}" class="post-img">` : `<div style="padding:40px;text-align:center;width:100%;color:#666">${p.text}</div>`}
-                            </div>
-                            <div class="post-actions">
-                                <div class="action-left">
-                                    <span>❤️</span> <span>💬</span> <span>🚀</span>
-                                </div>
-                                <span>🔖</span>
-                            </div>
-                            <div class="post-likes">${Math.floor(Math.random() * 500)} Me gusta</div>
-                            <div class="post-caption">
-                                <span style="font-weight:600">${p.userEmail.split('@')[0]}</span> ${p.text}
-                            </div>
-                            <div class="post-time">hace 2 horas</div>
-                        </article>
-                    `;
-                });
-            });
-        }
-        window.deletePost = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "posts", id)); }
-
-        /* --- STORIES (MOCK) --- */
-        function loadStories() {
-            const rail = el('storiesRail');
-            // Limpiar todo excepto "Mi historia"
-            while (rail.children.length > 1) { rail.removeChild(rail.lastChild); }
-            
-            // Generar historias falsas para "estética"
-            const names = ['sofia', 'marco', 'zuleima', 'jalbax', 'eymi', 'nicole'];
-            names.forEach((name, i) => {
-                rail.innerHTML += `
-                    <div class="story-item">
-                        <div class="story-ring">
-                            <img src="https://i.pravatar.cc/150?img=${i+10}" class="story-img">
-                        </div>
-                        <span class="story-name">${name}</span>
-                    </div>
-                `;
-            });
-        }
-
-        /* --- INBOX & CHAT SYSTEM --- */
-        
-        window.openInbox = () => el('inboxScreen').classList.remove('hidden');
-        window.closeInbox = () => el('inboxScreen').classList.add('hidden');
-
-        // 1. Cargar Usuarios para la lista de Chats
-        async function loadUsersForInbox() {
-            const list = el('conversationsList');
-            const notes = el('notesList');
-            
-            // Escuchar cambios en la colección de usuarios
-            onSnapshot(collection(db, "users"), (snap) => {
-                allUsers = [];
-                let html = '';
-                let notesHtml = el('notesList').innerHTML; // Mantener "Tu nota"
-
-                snap.forEach(docUser => {
-                    const u = docUser.data();
-                    if(u.email !== currentUser.email) {
-                        allUsers.push(u);
-                        
-                        // Agregar a lista de mensajes
-                        html += `
-                            <div class="msg-row" onclick="startChat('${u.email}', '${u.avatar}')">
-                                <img src="${u.avatar}" class="msg-avatar">
-                                <div class="msg-content">
-                                    <div class="msg-name">${u.email.split('@')[0]}</div>
-                                    <div class="msg-preview">Toca para chatear · 1h</div>
-                                </div>
-                                <div class="cam-icon">📷</div>
-                            </div>
-                        `;
-
-                        // Agregar una "Nota" fake para decoración
-                        notesHtml += `
-                            <div class="note-item">
-                                <div class="note-bubble">Hola 👋</div>
-                                <img src="${u.avatar}" class="avatar-small" style="width:50px; height:50px; margin-top:5px; border:2px solid #333">
-                                <span style="font-size:11px; margin-top:2px; color:#aaa">${u.email.split('@')[0]}</span>
-                            </div>
-                        `;
-                    }
-                });
-                list.innerHTML = html;
-                // Hack simple para no duplicar notas en updates, en app real sería mejor lógica
-                if(notes.children.length <= 1) notes.innerHTML = notesHtml;
-            });
-        }
-
-        // 2. Abrir Chat Room
-        window.startChat = (targetEmail, targetAvatar) => {
-            currentChatUser = targetEmail;
-            el('chatHeaderName').innerText = targetEmail.split('@')[0];
-            el('chatHeaderAvatar').src = targetAvatar;
-            el('chatRoom').classList.remove('hidden');
-            loadMessages(targetEmail);
-        };
-        window.closeChat = () => {
-            el('chatRoom').classList.add('hidden');
-            currentChatUser = null;
-        };
-
-        // 3. Enviar Mensaje
-        window.sendDirectMessage = async () => {
-            const txt = el('msgInput').value;
-            if(!txt || !currentChatUser) return;
-
-            // Guardamos mensaje en colección global 'messages'
-            await addDoc(collection(db, "messages"), {
-                from: currentUser.email,
-                to: currentChatUser,
-                text: txt,
+                uid: currentUser.uid,
+                username: uData.username,
+                avatar: uData.avatar,
+                image: downloadUrl,
+                caption: caption,
+                likes: [],
+                commentsCount: 0,
                 createdAt: Date.now()
             });
-            el('msgInput').value = '';
-        };
-
-        // 4. Leer Mensajes (Filtro simple en cliente para prototipo)
-        let msgUnsub = null;
-        function loadMessages(targetEmail) {
-            if(msgUnsub) msgUnsub(); // Detener listener anterior
-            
-            const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-            
-            msgUnsub = onSnapshot(q, (snap) => {
-                const body = el('chatBody');
-                body.innerHTML = '';
-                
-                snap.forEach(docSnap => {
-                    const m = docSnap.data();
-                    
-                    // Filtrar solo los mensajes entre YO y EL OTRO
-                    const isMeToHim = m.from === currentUser.email && m.to === targetEmail;
-                    const isHimToMe = m.from === targetEmail && m.to === currentUser.email;
-
-                    if (isMeToHim || isHimToMe) {
-                        const type = isMeToHim ? 'me' : 'you';
-                        body.innerHTML += `<div class="bubble ${type}">${m.text}</div>`;
-                    }
-                });
-                // Auto scroll down
-                body.scrollTop = body.scrollHeight;
+            const uRef = doc(db, "users", currentUser.uid);
+            await updateDoc(uRef, { postsCount: (uData.postsCount || 0) + 1 });
+            updateUI(currentUser);
+            loadUserPosts(currentUser.uid); 
+        } 
+        else if (currentMode === 'story') {
+            const isVideo = fileToUpload.type.startsWith('video');
+            await addDoc(collection(db, "stories"), {
+                uid: currentUser.uid,
+                username: uData.username,
+                avatar: uData.avatar,
+                media: downloadUrl,
+                type: isVideo ? 'video' : 'image',
+                duration: isVideo ? 60 : 15,
+                createdAt: Date.now(),
+                // Campos para las nuevas interacciones
+                views: [],
+                likes: []
             });
         }
 
-    </script>
+        closeUploader();
+        btn.disabled = false;
+        btn.innerText = "Publicar"; 
+
+    } catch (e) {
+        console.error("Error al subir:", e);
+        alert("Error al subir: " + e.message);
+        btn.innerText = "Reintentar";
+        btn.disabled = false;
+    }
+};
+
+
+// --- FEED & INTERACCIONES ---
+function listenFeed() {
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
+        const list = document.getElementById('feedList');
+        list.innerHTML = '';
+        snap.forEach(d => {
+            const p = d.data();
+            const liked = p.likes.includes(currentUser.uid);
+            list.innerHTML += `
+                <div class="post">
+                    <div class="post-header">
+                        <div style="display:flex;align-items:center;gap:10px; cursor:pointer;" onclick="switchTab('profile'); openUserProfile('${p.uid}')">
+                            <img src="${p.avatar}" class="avatar">
+                            <b>${p.username}</b>
+                        </div>
+                    </div>
+                    <div class="post-img-container">
+                        <img src="${p.image}" class="post-img" ondblclick="toggleLike('${d.id}', ${!liked})">
+                    </div>
+                    <div class="actions">
+                        <span onclick="toggleLike('${d.id}', ${!liked})" style="color:${liked ? 'var(--red)' : 'white'}">${liked ? '❤️' : '♡'}</span>
+                        <span onclick="openCommentsModal('${d.id}')">💬</span>
+                    </div>
+                    <div style="padding:0 15px">
+                        <b>${p.likes.length} Me gusta</b><br>
+                        <span><b>${p.username}</b> ${p.caption}</span>
+                        ${p.commentsCount > 0 ? `<div style="font-size:14px;color:#888;margin-top:5px;cursor:pointer" onclick="openCommentsModal('${d.id}')">Ver los ${p.commentsCount} comentarios</div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    });
+}
+
+window.toggleLike = async (pid, shouldLike) => {
+    const ref = doc(db, "posts", pid);
+    if(shouldLike) await updateDoc(ref, { likes: arrayUnion(currentUser.uid) });
+    else await updateDoc(ref, { likes: arrayRemove(currentUser.uid) });
+};
+
+// --- COMENTARIOS (Feed) ---
+window.openCommentsModal = (postId) => {
+    currentPostId = postId;
+    replyToCommentId = null;
+    document.getElementById('commentInput').placeholder = "Añade un comentario...";
+    document.getElementById('commentsModal').classList.remove('hidden');
+    listenComments(postId);
+};
+
+window.closeCommentsModal = () => {
+    document.getElementById('commentsModal').classList.add('hidden');
+    currentPostId = null;
+    replyToCommentId = null;
+};
+
+window.replyTo = (commentId, username) => {
+    replyToCommentId = commentId;
+    document.getElementById('commentInput').placeholder = `Respondiendo a @${username}...`;
+    document.getElementById('commentInput').focus();
+};
+
+async function listenComments(postId) {
+    const q = query(collection(db, `posts/${postId}/comments`), orderBy("createdAt", "asc"));
+    onSnapshot(q, (snap) => {
+        const list = document.getElementById('commentsList');
+        list.innerHTML = '';
+
+        snap.forEach(d => {
+            const c = d.data();
+            const isReply = c.replyToId;
+            const replyMarkup = isReply ? `<span style="color:#0095f6; margin-right:5px;">@${c.replyToUser}</span>` : '';
+            const replyAction = isReply ? '' : `<div class="comment-reply" onclick="replyTo('${d.id}', '${c.username}')">Responder</div>`;
+            
+            list.innerHTML += `
+                <div class="comment-item" style="margin-left: ${isReply ? '25px' : '0'};">
+                    <img src="${c.avatar}" class="avatar" style="width:24px; height:24px;">
+                    <div class="comment-body">
+                        <b>${c.username}</b> ${replyMarkup} ${c.text}
+                        ${replyAction}
+                    </div>
+                </div>
+            `;
+        });
+        
+        if (snap.empty) {
+            list.innerHTML = '<p style="text-align:center; color:#666; padding:50px;">Sé el primero en comentar.</p>';
+        }
+    });
+}
+
+window.postComment = async () => {
+    if (!currentPostId) return;
+
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+    if (text === '') return;
+
+    try {
+        const uSnap = await getDoc(doc(db, "users", currentUser.uid));
+        const uData = uSnap.data();
+        
+        const commentData = {
+            uid: currentUser.uid,
+            username: uData.username,
+            avatar: uData.avatar,
+            text: text,
+            createdAt: Date.now(),
+            replyToId: replyToCommentId,
+            replyToUser: replyToCommentId ? (await getDoc(doc(db, `posts/${currentPostId}/comments`, replyToCommentId))).data().username : null
+        };
+
+        await addDoc(collection(db, `posts/${currentPostId}/comments`), commentData);
+
+        const postRef = doc(db, "posts", currentPostId);
+        const postSnap = await getDoc(postRef);
+        await updateDoc(postRef, { commentsCount: (postSnap.data().commentsCount || 0) + 1 });
+
+        input.value = '';
+        replyToCommentId = null;
+        input.placeholder = "Añade un comentario...";
+
+    } catch (e) {
+        console.error("Error al publicar comentario:", e);
+        alert("Hubo un error al publicar el comentario.");
+    }
+};
+
+// --- VISOR DE POST INDIVIDUAL ---
+
+window.openPostViewer = async (postId) => {
+    currentViewingPostId = postId;
+    document.getElementById('postViewerModal').classList.remove('hidden');
+    
+    const postRef = doc(db, "posts", postId);
+    
+    // Listener para actualizar el post en tiempo real (likes, comentarios)
+    onSnapshot(postRef, async (d) => {
+        if (!d.exists()) { closePostViewer(); return; }
+        const p = d.data();
+        
+        const liked = p.likes.includes(currentUser.uid);
+        
+        document.getElementById('pvUsernameHeader').innerText = `${p.username}'s Post`;
+        document.getElementById('pvAvatar').src = p.avatar;
+        document.getElementById('pvUsername').innerHTML = `<span onclick="closePostViewer(); switchTab('profile'); openUserProfile('${p.uid}')" style="cursor:pointer;">${p.username}</span>`;
+        document.getElementById('pvImage').src = p.image;
+        document.getElementById('pvLikesCount').innerText = `${p.likes.length} Me gusta`;
+        document.getElementById('pvCaption').innerHTML = `<b>${p.username}</b> ${p.caption}`;
+        
+        // Botón de Like
+        const likeBtn = document.getElementById('pvLikeBtn');
+        likeBtn.style.color = liked ? 'var(--red)' : 'white';
+        likeBtn.innerText = liked ? '❤️' : '♡';
+        likeBtn.setAttribute('onclick', `toggleLike('${postId}', ${!liked});`);
+
+        // Sincronizar el avatar del usuario actual en la barra de comentarios
+        document.getElementById('pvCommentUserAvatar').src = currentUser.photoURL;
+
+        // Cargar y escuchar comentarios específicos para este post
+        listenViewerComments(postId);
+    });
+};
+
+window.closePostViewer = () => {
+    document.getElementById('postViewerModal').classList.add('hidden');
+    currentViewingPostId = null;
+};
+
+async function listenViewerComments(postId) {
+    const q = query(collection(db, `posts/${postId}/comments`), orderBy("createdAt", "asc"));
+    onSnapshot(q, (snap) => {
+        const list = document.getElementById('pvCommentsList');
+        list.innerHTML = '';
+
+        snap.forEach(d => {
+            const c = d.data();
+            const replyMarkup = c.replyToId ? `<span style="color:#0095f6; margin-right:5px;">@${c.replyToUser}</span>` : '';
+            
+            list.innerHTML += `
+                <div style="display:flex; gap: 10px; margin-bottom: 10px; font-size:14px;">
+                    <img src="${c.avatar}" class="avatar" style="width:24px; height:24px;">
+                    <div><b>${c.username}</b> ${replyMarkup} ${c.text}</div>
+                </div>
+            `;
+        });
+        
+        if (snap.empty) {
+            list.innerHTML = '<p style="text-align:center; color:#666; padding:10px;">Sé el primero en comentar.</p>';
+        }
+    });
+}
+
+window.postCommentFromViewer = async () => {
+    const input = document.getElementById('pvCommentInput');
+    const text = input.value.trim();
+    if (!text || !currentViewingPostId) return;
+
+    try {
+        const uSnap = await getDoc(doc(db, "users", currentUser.uid));
+        const uData = uSnap.data();
+        
+        await addDoc(collection(db, `posts/${currentViewingPostId}/comments`), {
+            uid: currentUser.uid,
+            username: uData.username,
+            avatar: uData.avatar,
+            text: text,
+            createdAt: Date.now(),
+            replyToId: null,
+            replyToUser: null
+        });
+
+        const postRef = doc(db, "posts", currentViewingPostId);
+        const postSnap = await getDoc(postRef);
+        await updateDoc(postRef, { commentsCount: (postSnap.data().commentsCount || 0) + 1 });
+
+        input.value = '';
+
+    } catch (e) {
+        console.error("Error al publicar comentario desde el visor:", e);
+    }
+};
+
+// --- HISTORIAS ---
+function listenStories() {
+    const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000); 
+
+    const q = query(
+        collection(db, "stories"), 
+        where("createdAt", ">", twentyFourHoursAgo), 
+        orderBy("createdAt", "desc")
+    );
+    
+    onSnapshot(q, (snap) => {
+        const rail = document.getElementById('storiesContainer');
+        while(rail.children.length > 1) { rail.removeChild(rail.lastChild); }
+        
+        const myStoryItem = rail.children[0].querySelector('.story-ring');
+        myStoryItem.classList.add('seen'); 
+        rail.children[0].setAttribute('onclick', `openUploader('story')`); 
+        
+        const seen = new Set();
+        
+        snap.forEach(d => {
+            const s = d.data();
+            
+            if(s.uid === currentUser.uid) {
+                // Lógica para mi propia historia
+                myStoryItem.classList.remove('seen'); 
+                rail.children[0].setAttribute('onclick', `openMyStories()`);
+            }
+            
+            // Lógica para historias de otros
+            if(s.uid !== currentUser.uid && !seen.has(s.uid)) {
+                seen.add(s.uid);
+                rail.innerHTML += `
+                    <div class="story-item" onclick="openStory('${d.id}', '${s.media}', '${s.type}', ${s.duration}, '${s.avatar}', '${s.username}', '${s.uid}')">
+                        <div class="story-ring"><img src="${s.avatar}"></div>
+                        <div style="font-size:11px;text-align:center;margin-top:4px">${s.username}</div>
+                    </div>
+                `;
+            }
+        });
+    });
+}
+
+// Nueva función para ver todas las historias propias
+window.openMyStories = async () => {
+    const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000); 
+    const q = query(
+        collection(db, "stories"), 
+        where("uid", "==", currentUser.uid),
+        where("createdAt", ">", twentyFourHoursAgo), 
+        orderBy("createdAt", "desc"),
+        limit(1) 
+    );
+    
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+        const d = snap.docs[0];
+        const s = d.data();
+        // Pasamos el UID para identificar que es nuestra historia
+        openStory(d.id, s.media, s.type, s.duration, s.avatar, s.username, s.uid);
+    } else {
+        openUploader('story'); 
+    }
+}
+
+let storyTimer;
+
+// Función para registrar vistas y abrir la historia.
+window.openStory = (id, media, type, duration, avatar, name, storyUID) => {
+    const v = document.getElementById('storyViewer');
+    v.classList.remove('hidden');
+    
+    document.getElementById('svAvatar').src = avatar;
+    document.getElementById('svUsername').innerText = name;
+    
+    const content = document.getElementById('svContent');
+    if(type === 'video') content.innerHTML = `<video src="${media}" autoplay style="width:100%"></video>`;
+    else content.innerHTML = `<img src="${media}">`;
+
+    const bar = document.getElementById('storyProgress');
+    bar.style.width = '0%';
+    bar.style.transition = 'none';
+    
+    setTimeout(() => {
+        bar.style.transition = `width ${duration}s linear`;
+        bar.style.width = '100%';
+    }, 50);
+
+    clearTimeout(storyTimer);
+    storyTimer = setTimeout(closeStory, duration * 1000);
+
+    const storyFooter = document.getElementById('storyFooter');
+    
+    if (storyUID === currentUser.uid) {
+        // Historia Propia: Muestra interacciones (vistas/likes)
+        storyFooter.innerHTML = '';
+        loadMyStoryInteractions(id);
+    } else {
+        // Historia de Otro: Muestra barra de respuesta
+        storyFooter.innerHTML = `
+            <div style="flex: 1; padding: 10px 15px; display:flex; gap:10px; background: rgba(0,0,0,0.6);">
+                <input type="text" id="storyReplyInput" class="auth-input" placeholder="Enviar mensaje" style="flex:1; margin:0; border:1px solid #666; background: rgba(255,255,255,0.1);">
+                <button onclick="sendStoryReply('${id}')" class="btn" style="width: auto; padding: 10px 15px;">Enviar</button>
+            </div>
+        `;
+        // Registrar vista solo si es de otro usuario
+        registerStoryView(id);
+    }
+};
+
+window.closeStory = () => {
+    document.getElementById('storyViewer').classList.add('hidden');
+    clearTimeout(storyTimer);
+    document.getElementById('svContent').innerHTML = '';
+    document.getElementById('storyFooter').innerHTML = '';
+};
+
+// --- LÓGICA DE INTERACCIONES DE HISTORIAS ---
+
+async function registerStoryView(storyId) {
+    const storyRef = doc(db, "stories", storyId);
+    try {
+        await updateDoc(storyRef, { 
+            views: arrayUnion(currentUser.uid) 
+        });
+    } catch (e) {
+        // Si el campo 'views' no existe, lo creamos.
+        await setDoc(storyRef, { views: [currentUser.uid] }, { merge: true });
+    }
+}
+
+window.toggleStoryLike = async (storyId, shouldLike) => {
+    const storyRef = doc(db, "stories", storyId);
+    if (shouldLike) {
+        await updateDoc(storyRef, { likes: arrayUnion(currentUser.uid) });
+    } else {
+        await updateDoc(storyRef, { likes: arrayRemove(currentUser.uid) });
+    }
+}
+
+// Envía respuesta de historia al chat privado
+window.sendStoryReply = async (storyId) => {
+    const input = document.getElementById('storyReplyInput');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    input.value = '';
+    
+    try {
+        const storySnap = await getDoc(doc(db, "stories", storyId));
+        const recipientUID = storySnap.data().uid;
+        const recipientUsername = storySnap.data().username;
+        
+        // 1. GENERAR ID DE CHAT
+        const participants = [currentUser.uid, recipientUID].sort();
+        const chatId = participants.join('_');
+        
+        // 2. ENVIAR EL MENSAJE (Respuesta de historia)
+        await addDoc(collection(db, `chats/${chatId}/messages`), {
+            senderId: currentUser.uid,
+            text: `(Respuesta a historia de ${recipientUsername}): ${text}`,
+            createdAt: Date.now()
+        });
+        
+        closeStory();
+
+    } catch(e) {
+        console.error("Error al enviar respuesta de historia a DM:", e);
+        alert("Error al enviar la respuesta.");
+    }
+};
+
+// Función para cargar las interacciones de tu propia historia
+function loadMyStoryInteractions(storyId) {
+    const storyRef = doc(db, "stories", storyId);
+    
+    // Usamos onSnapshot para ver las interacciones en tiempo real
+    onSnapshot(storyRef, async (d) => {
+        if (!d.exists()) return;
+
+        const s = d.data();
+        const viewsUids = s.views || [];
+        const likesUids = s.likes || [];
+        
+        // Cargar nombres de usuario para likes y vistas
+        const viewUsernames = await getUsernames(viewsUids);
+        const likeUsernames = await getUsernames(likesUids);
+        
+        const footer = document.getElementById('storyFooter');
+        footer.innerHTML = `
+            <div style="padding: 10px 15px; display: flex; justify-content: space-around; font-size: 14px; background: rgba(0,0,0,0.6); border-top: 1px solid #333;">
+                <div>👁️ Vistas: **${viewsUids.length}**</div>
+                <div>❤️ Likes: **${likesUids.length}**</div>
+            </div>
+            
+            <div style="max-height: 150px; overflow-y: auto; padding: 10px 15px; background: rgba(0,0,0,0.8); font-size: 12px;">
+                <p style="font-weight: bold; margin-bottom: 5px;">Visto por:</p>
+                <p>${viewUsernames.length > 0 ? viewUsernames.join(', ') : 'Nadie aún.'}</p>
+                
+                <p style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;">Le gustó a:</p>
+                <p>${likeUsernames.length > 0 ? likeUsernames.join(', ') : 'Nadie aún.'}</p>
+            </div>
+
+            <div style="text-align:center; color:#aaa; font-size:12px; padding: 5px 15px; background: rgba(0,0,0,0.9);">
+                (No puedes responder tu propia historia)
+            </div>
+        `;
+    });
+}
+
+async function getUsernames(uids) {
+    if (uids.length === 0) return [];
+    
+    const usernames = [];
+    // Una consulta por cada UID (ineficiente pero simple para este prototipo)
+    for (const uid of uids) {
+        const userSnap = await getDoc(doc(db, "users", uid));
+        if (userSnap.exists()) {
+            usernames.push(userSnap.data().username);
+        }
+    }
+    return usernames;
+}
+
+
+// --- NAVEGACIÓN Y PERFILES ---
+
+// Función para cargar los posts de un usuario específico (propio o de terceros)
+function loadUserPosts(uid) {
+    const list = document.getElementById('userProfilePosts');
+    list.innerHTML = '';
+    
+    const q = query(
+        collection(db, "posts"), 
+        where("uid", "==", uid),
+        orderBy("createdAt", "desc")
+    );
+
+    // Usamos onSnapshot para que los posts se actualicen automáticamente 
+    onSnapshot(q, (snap) => {
+        list.innerHTML = ''; // Limpiar antes de rellenar
+        snap.forEach(d => {
+            const p = d.data();
+            // AHORA LLAMA A openPostViewer
+            list.innerHTML += `
+                <div style="aspect-ratio: 1/1; overflow: hidden; background: #333; cursor:pointer;" onclick="openPostViewer('${d.id}')">
+                    <img src="${p.image}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            `;
+        });
+    });
+}
+
+
+window.openUserProfile = async (uid) => {
+    currentViewingProfileUid = uid;
+
+    const uRef = doc(db, "users", uid);
+    
+    // Usar onSnapshot para que el perfil de tercero se actualice automáticamente (ej: al seguir)
+    onSnapshot(uRef, async (uSnap) => {
+        if (!uSnap.exists()) {
+            alert("Usuario no encontrado.");
+            return;
+        }
+
+        const userData = uSnap.data();
+        
+        // 1. Mostrar la pantalla de perfil (Ya se hizo con switchTab, pero se asegura)
+        document.getElementById('profileScreen').classList.remove('hidden');
+        
+        // 2. Cargar los datos del usuario
+        document.getElementById('profileAvatar').src = userData.avatar;
+        document.getElementById('profileUsername').innerText = userData.username;
+        
+        document.getElementById('statPosts').innerText = userData.postsCount || 0;
+        document.querySelector('.stats div:nth-child(2) .stat-num').innerText = userData.followers?.length || 0;
+
+        // 3. Ocultar y mostrar controles según si es el perfil propio o de tercero
+        const isCurrentUser = uid === currentUser.uid;
+        const editableControls = document.querySelectorAll('#profileScreen > div:nth-child(2) > *');
+        editableControls.forEach(el => {
+            // Muestra o esconde todos los elementos del div de control, excepto la lista de posts
+            const shouldBeVisible = isCurrentUser || (el.id === 'userProfilePosts' || el.tagName === 'DIV' && el.querySelector('#userProfilePosts'));
+            el.style.display = shouldBeVisible ? 'block' : 'none';
+        });
+
+        // Ocultar elementos de edición para terceros
+        if (!isCurrentUser) {
+            // Oculta títulos y campos de edición si no es el usuario actual
+            const h4s = document.querySelectorAll('#profileScreen h4');
+            h4s.forEach(h4 => h4.style.display = 'none');
+            document.getElementById('newUsernameInput').style.display = 'none';
+        }
+
+        // 4. Botones de Acción (Seguir/Mensaje)
+        const profileHeader = document.getElementById('profileScreen').querySelector('.profile-header');
+        let profileActions = document.getElementById('userProfileActions');
+        if (!profileActions) {
+            profileActions = document.createElement('div');
+            profileActions.id = 'userProfileActions';
+            profileHeader.appendChild(profileActions);
+        } 
+        profileActions.style.cssText = 'display:flex; gap:10px; margin-top:10px; width:100%; justify-content:flex-end;';
+
+
+        if (!isCurrentUser) {
+            const isFollowing = userData.followers?.includes(currentUser.uid);
+            
+            profileActions.innerHTML = `
+                <button class="btn" style="width:120px; padding:8px; background:${isFollowing ? 'var(--gray)' : 'var(--blue)'};" onclick="toggleFollow('${uid}', ${!isFollowing})">
+                    ${isFollowing ? 'Siguiendo' : 'Seguir'}
+                </button>
+                <button class="btn secondary" style="width:120px; padding:8px;" onclick="closeDmsModal(); startChat('${uid}', '${userData.username}', '${userData.avatar}')">Mensaje</button>
+            `;
+            profileActions.style.display = 'flex';
+        } else {
+            profileActions.style.display = 'none';
+        }
+        
+        // 5. Cargar los posts de este usuario específico (no depende del listener de datos)
+        if (uid === currentViewingProfileUid) {
+            loadUserPosts(uid);
+        }
+    });
+};
+
+
+window.switchTab = (tab) => {
+    ['feedScreen', 'profileScreen', 'searchScreen'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    document.getElementById(tab+'Screen').classList.remove('hidden');
+
+    if (tab === 'profile') {
+        const targetUid = currentViewingProfileUid || currentUser.uid;
+        // Si el usuario da clic en el ícono de su perfil, currentViewingProfileUid es null, 
+        // y openUserProfile usará currentUser.uid
+        openUserProfile(targetUid); 
+
+    } else if(tab === 'feed') {
+        currentViewingProfileUid = null; // Resetea la vista de perfil al ir a inicio
+        listenFeed();
+
+    } else if(tab === 'search') {
+        searchUsers('');
+    }
+};
+
+window.searchUsers = async (val) => {
+    const div = document.getElementById('searchResults');
+    div.innerHTML = '';
+    
+    const q = query(collection(db, "users"));
+    const snap = await getDocs(q);
+    
+    snap.forEach(d => {
+        const u = d.data();
+        // Evitar buscarse a uno mismo
+        if (d.id !== currentUser.uid && u.username.toLowerCase().includes(val.toLowerCase())) {
+            div.innerHTML += `
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:15px; cursor:pointer;" onclick="switchTab('profile'); openUserProfile('${d.id}')">
+                    <img src="${u.avatar}" class="avatar">
+                    <b>${u.username}</b>
+                </div>
+            `;
+        }
+    });
+};
+
+
+// --- LÓGICA DE SEGUIR/DEJAR DE SEGUIR ---
+window.toggleFollow = async (targetUid, shouldFollow) => {
+    if (!currentUser) return;
+    
+    const targetRef = doc(db, "users", targetUid);
+
+    try {
+        if (shouldFollow) {
+            // Seguir: añade tu UID a la lista de seguidores del usuario objetivo
+            await updateDoc(targetRef, { followers: arrayUnion(currentUser.uid) });
+        } else {
+            // Dejar de seguir: elimina tu UID de la lista
+            await updateDoc(targetRef, { followers: arrayRemove(currentUser.uid) });
+        }
+        
+        // No es necesario llamar a openUserProfile, ya que el onSnapshot lo actualizará.
+
+    } catch (e) {
+        console.error("Error al seguir/dejar de seguir:", e);
+        alert("Hubo un error en la acción de seguimiento.");
+    }
+}
+
+
+// --- FUNCIONES DE DMs (Interfaz de Chat) ---
+
+window.openDmsModal = () => {
+    document.getElementById('dmsModal').classList.remove('hidden');
+    loadDmsUsers(false); 
+};
+
+window.closeDmsModal = () => {
+    document.getElementById('dmsModal').classList.add('hidden');
+    // Detener la escucha si se cierra el modal estando en un chat
+    if (unsubscribeChatListener) {
+        unsubscribeChatListener();
+        unsubscribeChatListener = null;
+    }
+    // Asegurar que al cerrar, se muestre la lista de chats de nuevo por defecto
+    document.getElementById('dmChatScreen').classList.add('hidden');
+    document.getElementById('dmsListScreen').classList.remove('hidden');
+};
+
+window.startChat = (uid, username, avatar) => {
+    currentRecipientUid = uid;
+
+    // 1. Generar ID de Chat Consistente
+    const participants = [currentUser.uid, uid].sort();
+    currentChatId = participants.join('_');
+
+    // 2. Cambiar a la pantalla de chat
+    document.getElementById('dmsListScreen').classList.add('hidden');
+    document.getElementById('dmChatScreen').classList.remove('hidden');
+    // MODIFICADO: Añadir onclick al nombre para ir al perfil
+    document.getElementById('chatRecipientName').innerHTML = `<span onclick="closeDmsModal(); switchTab('profile'); openUserProfile('${uid}')" style="cursor:pointer;">${username}</span>`;
+
+    // 3. Iniciar la escucha de mensajes para este chat
+    listenForMessages(currentChatId);
+};
+
+async function loadDmsUsers(returnFromChat = false) {
+    // 1. Si venimos de un chat, detenemos la escucha y limpiamos
+    if (unsubscribeChatListener) {
+        unsubscribeChatListener();
+        unsubscribeChatListener = null;
+    }
+    
+    // El botón '←' llama a esta función con `returnFromChat=true`
+    document.getElementById('dmChatScreen').classList.add('hidden');
+    document.getElementById('dmsListScreen').classList.remove('hidden');
+
+    const bubbles = document.getElementById('dmsUserBubbles');
+    if (!returnFromChat) bubbles.innerHTML = ''; // Limpiar solo si no volvemos de un chat
+
+    const q = query(collection(db, "users"));
+    const snap = await getDocs(q);
+    
+    let bubblesHtml = '';
+
+    snap.forEach(d => {
+        const u = d.data();
+        const userId = d.id;
+        const userName = u.username;
+        const userAvatar = u.avatar;
+        
+        // Solo mostramos a otros usuarios
+        if (userId !== currentUser.uid) {
+            bubblesHtml += `
+                <div style="text-align:center; cursor:pointer;" onclick="startChat('${userId}', '${userName}', '${userAvatar}')">
+                    <img src="${userAvatar}" class="avatar" style="width: 50px; height: 50px;">
+                    <div style="font-size: 11px; margin-top: 4px;">${userName}</div>
+                </div>
+            `;
+        }
+    });
+
+    bubbles.innerHTML = bubblesHtml;
+    
+    if (bubbles.innerHTML === '') {
+        bubbles.innerHTML = '<div style="text-align:center; color:#666; width: 100%;">No hay otros usuarios registrados aún.</div>';
+    }
+}
+
+// Escucha de mensajes en tiempo real
+function listenForMessages(chatId) {
+    const messagesContainer = document.getElementById('chatMessages');
+    messagesContainer.innerHTML = ''; 
+
+    const q = query(
+        collection(db, `chats/${chatId}/messages`),
+        orderBy("createdAt", "asc")
+    );
+    
+    // Almacenar el listener para poder detenerlo más tarde
+    unsubscribeChatListener = onSnapshot(q, (snap) => {
+        messagesContainer.innerHTML = '';
+        snap.forEach(d => {
+            const m = d.data();
+            const isSelf = m.senderId === currentUser.uid;
+            const messageClass = isSelf ? 'self' : 'other';
+            
+            messagesContainer.innerHTML += `
+                <div class="msg ${messageClass}">${m.text}</div>
+            `;
+        });
+        // Scroll automático al final de la conversación
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+}
+
+window.sendDmMessage = async () => {
+    const input = document.getElementById('dmInput');
+    const text = input.value.trim();
+    if (!text || !currentChatId) return;
+
+    try {
+        await addDoc(collection(db, `chats/${currentChatId}/messages`), {
+            senderId: currentUser.uid,
+            text: text,
+            createdAt: Date.now()
+        });
+        
+        input.value = ''; // Limpiar input
+        
+    } catch (e) {
+        console.error("Error al enviar DM:", e);
+        alert("Error al enviar mensaje.");
+    }
+};
+</script>
 </body>
 </html>
