@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Nexus - Instagram Clone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- ESTILOS GENERALES TIPO INSTAGRAM --- */
+        :root {
+            --bg: #000000;
+            --card: #000000;
+            --text: #ffffff;
+            --muted: #a8a8a8;
+            --border: #262626;
+            --blue: #0095f6;
+            --danger: #ed4956;
+            --story-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; justify-content: center; overflow: hidden; }
+
+        /* Contenedor tipo Móvil */
+        .app-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; position: relative; background: var(--bg); border-left: 1px solid #1c1c1c; border-right: 1px solid #1c1c1c; }
+        
+        .hidden { display: none !important; }
+
+        /* --- PANTALLA LOGIN --- */
+        .auth-container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
+        .logo-text { font-family: 'Inter', sans-serif; font-size: 32px; font-weight: 700; margin-bottom: 30px; letter-spacing: -1px; }
+        .auth-input { width: 100%; padding: 14px; margin: 6px 0; background: #121212; border: 1px solid #333; color: white; border-radius: 4px; outline: none; font-size: 14px; }
+        .auth-btn { width: 100%; padding: 14px; background: var(--blue); border: none; color: white; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 15px; font-size: 14px; }
+
+        /* --- HEADER SUPERIOR (HOME) --- */
+        .top-nav {
+            padding: 0 16px; height: 54px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg); z-index: 10;
+        }
+        .app-logo { font-size: 22px; font-weight: 700; font-family: sans-serif; letter-spacing: -0.5px; }
+        .nav-icons { display: flex; gap: 20px; font-size: 24px; }
+        .icon-btn { cursor: pointer; position: relative; }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; font-weight: bold; }
+
+        /* --- HISTORIAS (STORIES) --- */
+        .stories-rail {
+            display: flex; gap: 14px; padding: 10px 16px; overflow-x: auto; border-bottom: 1px solid var(--border);
+            scrollbar-width: none; /* Firefox */
+        }
+        .stories-rail::-webkit-scrollbar { display: none; }
+        
+        .story-item { display: flex; flex-direction: column; align-items: center; min-width: 68px; cursor: pointer; }
+        .story-ring {
+            width: 64px; height: 64px; border-radius: 50%; padding: 2px;
+            background: var(--story-gradient);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .story-ring.seen { background: #333; }
+        .story-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--bg); object-fit: cover; background: #222; }
+        .story-name { font-size: 11px; margin-top: 4px; color: white; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 64px; }
+        
+        .my-story .story-ring { background: transparent; position: relative; }
+        .add-story-icon { position: absolute; bottom: 0; right: 0; background: var(--blue); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 16px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg); }
+
+        /* --- FEED POSTS --- */
+        .feed-container { flex: 1; overflow-y: auto; padding-bottom: 60px; }
+        .post { margin-bottom: 20px; }
+        .post-header { padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
+        .user-info { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
+        .avatar-small { width: 32px; height: 32px; border-radius: 50%; background: #333; object-fit: cover; }
+        .post-img-container { width: 100%; background: #1a1a1a; min-height: 300px; display: flex; align-items: center; }
+        .post-img { width: 100%; height: auto; display: block; }
+        .post-actions { padding: 12px; display: flex; justify-content: space-between; font-size: 24px; }
+        .action-left { display: flex; gap: 16px; }
+        .post-likes { padding: 0 12px; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+        .post-caption { padding: 0 12px; font-size: 14px; line-height: 1.4; }
+        .post-time { padding: 6px 12px; font-size: 11px; color: var(--muted); }
+        .delete-btn { font-size: 20px; color: white; background: none; border: none; }
+
+        /* --- PANTALLA MENSAJES (INBOX) --- */
+        .inbox-screen { background: black; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; flex-direction: column; }
+        .inbox-header { padding: 15px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: 700; }
+        .search-bar-container { padding: 0 16px 15px; }
+        .search-input { width: 100%; background: #262626; border: none; border-radius: 10px; padding: 8px 15px; color: #fff; font-size: 14px; outline: none; }
+        
+        .notes-section { display: flex; gap: 15px; padding: 10px 16px; overflow-x: auto; margin-bottom: 10px; }
+        .note-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; position: relative; }
+        .note-bubble { 
+            position: absolute; top: -10px; background: #fff; color: black; font-size: 10px; padding: 4px 8px; border-radius: 10px; 
+            max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
+        }
+        .message-list { flex: 1; overflow-y: auto; padding-top: 10px; }
+        .msg-row { display: flex; align-items: center; padding: 10px 16px; cursor: pointer; gap: 12px; }
+        .msg-row:active { background: #111; }
+        .msg-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #333; }
+        .msg-content { flex: 1; }
+        .msg-name { font-weight: 500; font-size: 14px; color: #fff; margin-bottom: 2px; }
+        .msg-preview { color: var(--muted); font-size: 13px; }
+        .cam-icon { font-size: 20px; color: var(--muted); }
+
+        /* --- PANTALLA CHAT INDIVIDUAL --- */
+        .chat-room { position: fixed; inset: 0; background: black; z-index: 60; display: flex; flex-direction: column; }
+        .chat-header { padding: 10px 16px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); }
+        .chat-body { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .chat-input-area { padding: 10px 16px; display: flex; align-items: center; gap: 10px; background: black; }
+        .chat-input { flex: 1; background: #262626; border: none; border-radius: 20px; padding: 10px 15px; color: white; outline: none; }
+        
+        .bubble { max-width: 70%; padding: 10px 14px; border-radius: 20px; font-size: 14px; word-wrap: break-word; }
+        .bubble.me { align-self: flex-end; background: #3797f0; color: white; border-bottom-right-radius: 4px; }
+        .bubble.you { align-self: flex-start; background: #262626; color: white; border-bottom-left-radius: 4px; }
+
+        /* --- BOTTOM NAVIGATION --- */
+        .bottom-nav {
+            height: 50px; border-top: 1px solid var(--border); background: black; display: flex; justify-content: space-around; align-items: center;
+            position: absolute; bottom: 0; width: 100%; z-index: 20;
+        }
+        .nav-icon { font-size: 24px; color: white; cursor: pointer; }
+        .user-nav-avatar { width: 24px; height: 24px; border-radius: 50%; background: #444; border: 1px solid white; }
+
+        /* --- MODAL CREAR POST --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .modal-box { background: #262626; width: 90%; max-width: 400px; border-radius: 12px; padding: 20px; }
+        .modal-title { text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; font-weight: 600; }
+        textarea { width: 100%; background: #121212; border: none; color: white; padding: 10px; border-radius: 8px; resize: none; margin-bottom: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div id="authScreen" class="auth-container">
+            <div class="logo-text">Nexus</div>
+            <input type="email" id="emailInput" class="auth-input" placeholder="Teléfono, usuario o correo">
+            <input type="password" id="passInput" class="auth-input" placeholder="Contraseña">
+            <button class="auth-btn" onclick="handleLogin()">Iniciar sesión</button>
+            <button class="auth-btn" style="background:transparent; color:#0095f6; margin-top:5px" onclick="handleRegister()">Registrarte</button>
+            <p id="authError" style="color:var(--danger); font-size:12px; margin-top:10px"></p>
+        </div>
+
+        <div id="appScreen" class="hidden" style="height:100%; display:flex; flex-direction:column;">
+            
+            <div class="top-nav">
+                <div class="app-logo">Nexus</div>
+                <div class="nav-icons">
+                    <div class="icon-btn">♡</div>
+                    <div class="icon-btn" onclick="openInbox()">
+                        <svg aria-label="Messenger" class="_8-yf5 " fill="#ffffff" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M12.003 2.001a9.705 9.705 0 11-9.705 9.705 9.694 9.694 0 019.705-9.705zm0-2a11.704 11.704 0 1011.704 11.704A11.717 11.717 0 0012.003.001zM11.999 20a8.001 8.001 0 118.001-8.001 8.01 8.01 0 01-8.001 8.001z"></path><path d="M11.999 5a7.002 7.002 0 00-6.136 10.323l-1.353 3.655a1.001 1.001 0 001.275 1.275l3.655-1.353A7.002 7.002 0 1011.999 5zm0 12a4.998 4.998 0 114.998-4.998 5.003 5.003 0 01-4.998 4.998z"></path></svg>
+                        <div class="badge hidden" id="msgBadge"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feed-container" id="feedContainer">
+                
+                <div class="stories-rail" id="storiesRail">
+                    <div class="story-item my-story">
+                        <div class="story-ring">
+                            <img src="https://via.placeholder.com/150" class="story-img" id="myStoryAvatar">
+                            <div class="add-story-icon">+</div>
+                        </div>
+                        <span class="story-name">Tu historia</span>
+                    </div>
+                    </div>
+
+                <div id="postsList"></div>
+            </div>
+
+            <nav class="bottom-nav">
+                <div class="nav-icon">🏠</div> <div class="nav-icon">🔍</div> <div class="nav-icon" onclick="openCreateModal()">➕</div> <div class="nav-icon">🎬</div> <div class="user-nav-avatar" id="navProfilePic"></div> </nav>
+
+        </div>
+
+        <div id="inboxScreen" class="inbox-screen hidden">
+            <div class="inbox-header">
+                <div style="display:flex; align-items:center; gap:10px">
+                    <span style="font-size:24px; cursor:pointer" onclick="closeInbox()">←</span>
+                    <span id="inboxUsername">usuario_nexus</span>
+                </div>
+                <div>📝</div>
+            </div>
+            
+            <div class="search-bar-container">
+                <input type="text" class="search-input" placeholder="Buscar">
+            </div>
+
+            <div class="notes-section" id="notesList">
+                <div class="note-item">
+                    <div class="note-bubble">Tu nota</div>
+                    <img src="https://via.placeholder.com/150" class="avatar-small" style="width:50px; height:50px; margin-top:5px" id="myNoteAvatar">
+                    <span style="font-size:11px; margin-top:2px; color:#aaa">Tu nota</span>
+                </div>
+            </div>
+
+            <div style="padding: 10px 16px; font-weight:700; font-size:14px">Mensajes</div>
+
+            <div class="message-list" id="conversationsList">
+                <p style="text-align:center; color:#555; margin-top:20px">Cargando usuarios...</p>
+            </div>
+        </div>
+
+        <div id="chatRoom" class="chat-room hidden">
+            <div class="chat-header">
+                <span style="font-size:24px; cursor:pointer" onclick="closeChat()">←</span>
+                <img src="" id="chatHeaderAvatar" class="avatar-small">
+                <div style="flex:1">
+                    <div id="chatHeaderName" style="font-weight:600">Nombre</div>
+                    <div style="font-size:11px; color:var(--muted)">Activo ahora</div>
+                </div>
+                <div style="font-size:22px">📞 📹</div>
+            </div>
+            
+            <div class="chat-body" id="chatBody">
+                </div>
+
+            <div class="chat-input-area">
+                <div style="background:#333; color:white; border-radius:50%; width:35px; height:35px; display:flex; align-items:center; justify-content:center">📷</div>
+                <input type="text" class="chat-input" id="msgInput" placeholder="Envía un mensaje...">
+                <button onclick="sendDirectMessage()" style="background:none; border:none; color:var(--blue); font-weight:600; cursor:pointer">Enviar</button>
+            </div>
+        </div>
+
+        <div id="createModal" class="modal-overlay hidden">
+            <div class="modal-box">
+                <div class="modal-title">Crear publicación</div>
+                <textarea id="postText" rows="3" placeholder="Escribe un pie de foto..."></textarea>
+                <input type="text" id="postImage" class="auth-input" placeholder="URL de la imagen (Ej: https://...)" style="margin-bottom:15px">
+                <div style="display:flex; gap:10px">
+                    <button class="auth-btn" style="flex:1; background:#333" onclick="closeCreateModal()">Cancelar</button>
+                    <button class="auth-btn" style="flex:1" onclick="createPost()">Compartir</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, setDoc, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // ============================================
+        // ⚠️ PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE ⚠️
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYoLe-eRgMVPdnVq0GXhMd8oMCOEWGg0",
+            authDomain: "nexus-97f3e.firebaseapp.com",
+            projectId: "nexus-97f3e",
+            storageBucket: "nexus-97f3e.firebasestorage.app",
+            messagingSenderId: "912984263748",
+            appId: "1:912984263748:web:e841a7ace0398a8e99c011"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+        let allUsers = []; 
+        let currentChatUser = null; // Email del usuario con quien hablas
+
+        const ADMIN_EMAIL = "admin@nexus.com";
+
+        /* --- AUTH & INIT --- */
+        window.handleLogin = async () => {
+            try {
+                await signInWithEmailAndPassword(auth, el('emailInput').value, el('passInput').value);
+            } catch (e) { el('authError').innerText = "Error: " + e.message; }
+        };
+
+        window.handleRegister = async () => {
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, el('emailInput').value, el('passInput').value);
+                // Guardar usuario en colección 'users' para poder listarlo en DM
+                await setDoc(doc(db, "users", cred.user.email), {
+                    email: cred.user.email,
+                    avatar: `https://i.pravatar.cc/150?u=${cred.user.email}` // Avatar random
+                });
+            } catch (e) { el('authError').innerText = e.message; }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                el('authScreen').classList.add('hidden');
+                el('appScreen').classList.remove('hidden');
+                
+                // Asegurar que el usuario esté en la BD de 'users' (por si es login antiguo)
+                await setDoc(doc(db, "users", user.email), {
+                    email: user.email,
+                    avatar: `https://i.pravatar.cc/150?u=${user.email}`
+                }, { merge: true });
+
+                el('inboxUsername').innerText = user.email.split('@')[0];
+                el('myStoryAvatar').src = `https://i.pravatar.cc/150?u=${user.email}`;
+                el('navProfilePic').style.backgroundImage = `url(https://i.pravatar.cc/150?u=${user.email})`;
+                el('navProfilePic').style.backgroundSize = 'cover';
+
+                loadPosts();
+                loadStories();
+                loadUsersForInbox(); // Cargar lista para DM
+            } else {
+                el('appScreen').classList.add('hidden');
+                el('authScreen').classList.remove('hidden');
+            }
+        });
+
+        /* --- UI LOGIC --- */
+        const el = (id) => document.getElementById(id);
+        
+        window.openCreateModal = () => el('createModal').classList.remove('hidden');
+        window.closeCreateModal = () => el('createModal').classList.add('hidden');
+
+        /* --- FEED POSTS --- */
+        window.createPost = async () => {
+            const text = el('postText').value;
+            const img = el('postImage').value;
+            if(!text && !img) return;
+
+            await addDoc(collection(db, "posts"), {
+                text, img,
+                userEmail: currentUser.email,
+                avatar: `https://i.pravatar.cc/150?u=${currentUser.email}`,
+                createdAt: Date.now(),
+                likes: 0
+            });
+            closeCreateModal();
+            el('postText').value = ''; el('postImage').value = '';
+        };
+
+        function loadPosts() {
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snap) => {
+                const list = el('postsList');
+                list.innerHTML = '';
+                snap.forEach(docSnap => {
+                    const p = docSnap.data();
+                    const isAdm = currentUser.email === ADMIN_EMAIL || currentUser.email === p.userEmail;
+                    
+                    let delBtn = isAdm ? `<button class="delete-btn" onclick="deletePost('${docSnap.id}')">⋮</button>` : '';
+
+                    list.innerHTML += `
+                        <article class="post">
+                            <div class="post-header">
+                                <div class="user-info">
+                                    <img src="${p.avatar || 'https://via.placeholder.com/30'}" class="avatar-small">
+                                    <span>${p.userEmail.split('@')[0]}</span>
+                                </div>
+                                ${delBtn}
+                            </div>
+                            <div class="post-img-container">
+                                ${p.img ? `<img src="${p.img}" class="post-img">` : `<div style="padding:40px;text-align:center;width:100%;color:#666">${p.text}</div>`}
+                            </div>
+                            <div class="post-actions">
+                                <div class="action-left">
+                                    <span>❤️</span> <span>💬</span> <span>🚀</span>
+                                </div>
+                                <span>🔖</span>
+                            </div>
+                            <div class="post-likes">${Math.floor(Math.random() * 500)} Me gusta</div>
+                            <div class="post-caption">
+                                <span style="font-weight:600">${p.userEmail.split('@')[0]}</span> ${p.text}
+                            </div>
+                            <div class="post-time">hace 2 horas</div>
+                        </article>
+                    `;
+                });
+            });
+        }
+        window.deletePost = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "posts", id)); }
+
+        /* --- STORIES (MOCK) --- */
+        function loadStories() {
+            const rail = el('storiesRail');
+            // Limpiar todo excepto "Mi historia"
+            while (rail.children.length > 1) { rail.removeChild(rail.lastChild); }
+            
+            // Generar historias falsas para "estética"
+            const names = ['sofia', 'marco', 'zuleima', 'jalbax', 'eymi', 'nicole'];
+            names.forEach((name, i) => {
+                rail.innerHTML += `
+                    <div class="story-item">
+                        <div class="story-ring">
+                            <img src="https://i.pravatar.cc/150?img=${i+10}" class="story-img">
+                        </div>
+                        <span class="story-name">${name}</span>
+                    </div>
+                `;
+            });
+        }
+
+        /* --- INBOX & CHAT SYSTEM --- */
+        
+        window.openInbox = () => el('inboxScreen').classList.remove('hidden');
+        window.closeInbox = () => el('inboxScreen').classList.add('hidden');
+
+        // 1. Cargar Usuarios para la lista de Chats
+        async function loadUsersForInbox() {
+            const list = el('conversationsList');
+            const notes = el('notesList');
+            
+            // Escuchar cambios en la colección de usuarios
+            onSnapshot(collection(db, "users"), (snap) => {
+                allUsers = [];
+                let html = '';
+                let notesHtml = el('notesList').innerHTML; // Mantener "Tu nota"
+
+                snap.forEach(docUser => {
+                    const u = docUser.data();
+                    if(u.email !== currentUser.email) {
+                        allUsers.push(u);
+                        
+                        // Agregar a lista de mensajes
+                        html += `
+                            <div class="msg-row" onclick="startChat('${u.email}', '${u.avatar}')">
+                                <img src="${u.avatar}" class="msg-avatar">
+                                <div class="msg-content">
+                                    <div class="msg-name">${u.email.split('@')[0]}</div>
+                                    <div class="msg-preview">Toca para chatear · 1h</div>
+                                </div>
+                                <div class="cam-icon">📷</div>
+                            </div>
+                        `;
+
+                        // Agregar una "Nota" fake para decoración
+                        notesHtml += `
+                            <div class="note-item">
+                                <div class="note-bubble">Hola 👋</div>
+                                <img src="${u.avatar}" class="avatar-small" style="width:50px; height:50px; margin-top:5px; border:2px solid #333">
+                                <span style="font-size:11px; margin-top:2px; color:#aaa">${u.email.split('@')[0]}</span>
+                            </div>
+                        `;
+                    }
+                });
+                list.innerHTML = html;
+                // Hack simple para no duplicar notas en updates, en app real sería mejor lógica
+                if(notes.children.length <= 1) notes.innerHTML = notesHtml;
+            });
+        }
+
+        // 2. Abrir Chat Room
+        window.startChat = (targetEmail, targetAvatar) => {
+            currentChatUser = targetEmail;
+            el('chatHeaderName').innerText = targetEmail.split('@')[0];
+            el('chatHeaderAvatar').src = targetAvatar;
+            el('chatRoom').classList.remove('hidden');
+            loadMessages(targetEmail);
+        };
+        window.closeChat = () => {
+            el('chatRoom').classList.add('hidden');
+            currentChatUser = null;
+        };
+
+        // 3. Enviar Mensaje
+        window.sendDirectMessage = async () => {
+            const txt = el('msgInput').value;
+            if(!txt || !currentChatUser) return;
+
+            // Guardamos mensaje en colección global 'messages'
+            await addDoc(collection(db, "messages"), {
+                from: currentUser.email,
+                to: currentChatUser,
+                text: txt,
+                createdAt: Date.now()
+            });
+            el('msgInput').value = '';
+        };
+
+        // 4. Leer Mensajes (Filtro simple en cliente para prototipo)
+        let msgUnsub = null;
+        function loadMessages(targetEmail) {
+            if(msgUnsub) msgUnsub(); // Detener listener anterior
+            
+            const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
+            
+            msgUnsub = onSnapshot(q, (snap) => {
+                const body = el('chatBody');
+                body.innerHTML = '';
+                
+                snap.forEach(docSnap => {
+                    const m = docSnap.data();
+                    
+                    // Filtrar solo los mensajes entre YO y EL OTRO
+                    const isMeToHim = m.from === currentUser.email && m.to === targetEmail;
+                    const isHimToMe = m.from === targetEmail && m.to === currentUser.email;
+
+                    if (isMeToHim || isHimToMe) {
+                        const type = isMeToHim ? 'me' : 'you';
+                        body.innerHTML += `<div class="bubble ${type}">${m.text}</div>`;
+                    }
+                });
+                // Auto scroll down
+                body.scrollTop = body.scrollHeight;
+            });
+        }
+
+    </script>
+</body>
+</html>
